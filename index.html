@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Iris Prediction</title>
+
+    <!-- Link CSS correctly -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Iris Flower Prediction App</h1>
+
+        <form action="/predict" method="post">
+            <input type="number" step="any" name="sepal_length" placeholder="Sepal Length" required>
+            <input type="number" step="any" name="sepal_width" placeholder="Sepal Width" required>
+            <input type="number" step="any" name="petal_length" placeholder="Petal Length" required>
+            <input type="number" step="any" name="petal_width" placeholder="Petal Width" required>
+
+            <button type="submit">Predict</button>
+        </form>
+
+       {% if prediction_text %}
+    <h2 class="result">{{ prediction_text }}</h2>
+
+    {% if flower_image %}
+        <img src="{{ url_for('static', filename=flower_image) }}"
+             alt="Flower Image"
+             width="200">
+    {% endif %}
+{% endif %}
+    </div>
+</body>
+</html>
+
