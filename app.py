@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request
 import joblib
+import numpy as np
+import os
 
-app = Flask(__name__, static_folder="static", static_url_path="/static")
+app = Flask(__name__)
 
-
+# Load trained model
 model = joblib.load("iris_model.pkl")
 
 @app.route("/")
@@ -12,37 +14,30 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    sl = float(request.form["sepal_length"])
-    sw = float(request.form["sepal_width"])
-    pl = float(request.form["petal_length"])
-    pw = float(request.form["petal_width"])
+    features = [
+        float(request.form["sepal_length"]),
+        float(request.form["sepal_width"]),
+        float(request.form["petal_length"]),
+        float(request.form["petal_width"])
+    ]
 
-    # Simple validation (Iris flower range check)
-    if not (4 <= sl <= 8 and 2 <= sw <= 5 and 1 <= pl <= 7 and 0.1 <= pw <= 3):
-        return render_template(
-            "index.html",
-            prediction_text="❌ This is NOT an Iris flower",
-            flower_image=None
-        )
+    prediction = model.predict([features])[0]
 
-    prediction = model.predict([[sl, sw, pl, pw]])[0]
+    classes = ["Setosa", "Versicolor", "Virginica"]
+    flower_name = classes[prediction]
 
-    flower_map = {
-        0: ("Iris Setosa", "images/setosa.jpg"),
-        1: ("Iris Versicolor", "images/versicolor.jpg"),
-        2: ("Iris Virginica", "images/virginica.jpg")
+    image_map = {
+        "Setosa": "images/setosa.jpg",
+        "Versicolor": "images/versicolor.jpg",
+        "Virginica": "images/virginica.jpg"
     }
-
-    flower_name, flower_image = flower_map[prediction]
 
     return render_template(
         "index.html",
-        prediction_text=f"🌸 Predicted Flower: {flower_name}",
-        flower_image=flower_image
+        prediction_text=f"Iris Flower Type: {flower_name}",
+        flower_image=image_map[flower_name]
     )
 
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
-
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
