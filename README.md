@@ -1,5 +1,3 @@
-#iris-flower-predictor
-Iris Flower Prediction using Random Forest & Flask
 
 # 🌸 Iris Flower Prediction Web App
 
